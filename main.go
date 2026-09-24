@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
 	var command Command
 	switch args[0] {
 	default:
-		if len(args[0]) < 2 || args[0][:1] != "-" {
+		if len(args[0]) < 2 || !strings.HasPrefix(args[0], "-") {
 			fmt.Printf("Unknown command '%s'.\n", args[0])
 			return
 		}

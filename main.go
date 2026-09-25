@@ -33,6 +33,12 @@ func parse(args []string) (Command, error) {
 	}
 
 	switch args[0] {
+	case "list":
+		return NewListCommand(), nil
+	case "add":
+		return NewAddCommand(), nil
+	case "remove":
+		return NewRemoveCommand(), nil
 	default:
 		if len(args[0]) < 2 || !strings.HasPrefix(args[0], "-") {
 			return nil, fmt.Errorf("unknown command '%s'", args[0])

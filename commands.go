@@ -39,6 +39,32 @@ func NewRootCommand(flag string) (*RootCommand, error) {
 	return &c, nil
 }
 
+type ListCommand struct{}
+
+func NewListCommand() *ListCommand {
+	c := ListCommand{}
+
+	return &c
+}
+
+type AddCommand struct{}
+
+func NewAddCommand() *AddCommand {
+	c := AddCommand{}
+
+	return &c
+}
+
+type RemoveCommand struct{}
+
+func NewRemoveCommand() *RemoveCommand {
+	c := RemoveCommand{}
+
+	return &c
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 func (c RootCommand) Execute() error {
 	switch {
 	case c.ShowHelp:
@@ -51,4 +77,16 @@ func (c RootCommand) Execute() error {
 	}
 
 	return nil
+}
+
+func (c ListCommand) Execute() error {
+	return errors.New("command 'list' not yet implemented")
+}
+
+func (c AddCommand) Execute() error {
+	return errors.New("command 'add' not yet implemented")
+}
+
+func (c RemoveCommand) Execute() error {
+	return errors.New("command 'remove' not yet implemented")
 }

@@ -19,16 +19,16 @@ type Command interface {
 }
 
 type RootCommand struct {
-	Flag string
+	flag string
 }
 
 func (c RootCommand) Execute() {
-	switch c.Flag {
+	switch c.flag {
 	case "--help", "-h":
 		fmt.Println(helpMessage)
 	case "--version", "-v":
 		fmt.Println("todoing", version)
 	default:
-		fmt.Printf("Unknown flag '%s'.\n", c.Flag)
+		fmt.Printf("Unknown flag '%s'.\n", c.flag)
 	}
 }

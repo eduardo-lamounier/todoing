@@ -15,20 +15,22 @@ remove: Removes the specified task.`
 const version = "1.0.0"
 
 type Command interface {
-	Execute()
+	Execute() error
 }
 
 type RootCommand struct {
 	flag string
 }
 
-func (c RootCommand) Execute() {
+func (c RootCommand) Execute() error {
 	switch c.flag {
 	case "--help", "-h":
 		fmt.Println(helpMessage)
 	case "--version", "-v":
 		fmt.Println("todoing", version)
 	default:
-		fmt.Printf("Unknown flag '%s'.\n", c.flag)
+		return fmt.Errorf("unknown flag '%s'", c.flag)
 	}
+
+	return nil
 }

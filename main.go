@@ -38,6 +38,6 @@ func parse(args []string) (Command, error) {
 			return nil, fmt.Errorf("unknown command '%s'", args[0])
 		}
 
-		return RootCommand{args[0]}, nil
+		return NewRootCommand(args[0])
 	}
 }

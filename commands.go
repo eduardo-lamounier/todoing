@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const helpMessage = `usage: todoing [-v | --version] [-h | --help] <command> [args]
 
@@ -19,17 +22,32 @@ type Command interface {
 }
 
 type RootCommand struct {
-	flag string
+	ShowHelp    bool
+	ShowVersion bool
+}
+
+func NewRootCommand(flag string) (*RootCommand, error) {
+	c := RootCommand{
+		ShowHelp:    flag == "--help" || flag == "-h",
+		ShowVersion: flag == "--version" || flag == "-v",
+	}
+
+	if !c.ShowHelp && !c.ShowVersion {
+		return nil, fmt.Errorf("unknown flag '%s'", flag)
+	}
+
+	return &c, nil
 }
 
 func (c RootCommand) Execute() error {
-	switch c.flag {
-	case "--help", "-h":
+	switch {
+	case c.ShowHelp:
 		fmt.Println(helpMessage)
-	case "--version", "-v":
+	case c.ShowVersion:
 		fmt.Println("todoing", version)
 	default:
-		return fmt.Errorf("unknown flag '%s'", c.flag)
+		// Shouldn't reach here
+		return errors.New("some flag is required when no command is passed")
 	}
 
 	return nil

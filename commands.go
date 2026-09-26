@@ -3,6 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
+	"strings"
+	"text/tabwriter"
+	"time"
 )
 
 const helpMessage = `usage: todoing [-v | --version] [-h | --help] <command> [args]
@@ -80,7 +84,69 @@ func (c RootCommand) Execute() error {
 }
 
 func (c ListCommand) Execute() error {
-	return errors.New("command 'list' not yet implemented")
+	userData, err := LoadUserData()
+	if err != nil {
+		return err
+	}
+
+	const (
+		minWidth = 0
+		tabWidth = 4
+		padding  = 4
+		padChar  = ' '
+		flags    = 0
+	)
+
+	tabWriter := tabwriter.NewWriter(
+		os.Stdout, minWidth, tabWidth, padding, padChar, flags,
+	)
+
+	formatPriority := func(priority TaskPriority) string {
+		return Capitalize(priority.String())
+	}
+
+	formatDeadline := func(deadline *time.Time) string {
+		if deadline == nil {
+			return "N/A"
+		}
+		return deadline.Format("01/02/2006")
+	}
+
+	formatState := func(state TaskState) string {
+		return Capitalize(strings.ReplaceAll(state.String(), "_", " "))
+	}
+
+	widthCols := [4]int{
+		len("Name:"), len("Priority:"), len("Deadline:"), len("State:"),
+	}
+
+	for _, task := range userData.Tasks {
+		widthCols[0] = max(widthCols[0], len(task.Name))
+		widthCols[1] = max(widthCols[1], len(formatPriority(task.Priority)))
+		widthCols[2] = max(widthCols[2], len(formatDeadline(task.Deadline)))
+		widthCols[3] = max(widthCols[3], len(formatState(task.State)))
+	}
+
+	totalWidth := (len(widthCols) - 1) * padding
+	for _, widthCol := range widthCols {
+		totalWidth += widthCol
+	}
+
+	const title = "[ Tasks ]"
+	fmt.Printf("%*s\n\n", totalWidth/2+len(title)/2, title)
+	fmt.Fprintf(tabWriter, "Name:\tPriority:\tDeadline:\tState:\n")
+	for _, task := range userData.Tasks {
+		fmt.Fprintf(
+			tabWriter, "%v\t%v\t%v\t%v\n",
+			task.Name,
+			formatPriority(task.Priority),
+			formatDeadline(task.Deadline),
+			formatState(task.State),
+		)
+	}
+	tabWriter.Flush()
+
+	return nil
 }
 
 func (c AddCommand) Execute() error {

@@ -12,18 +12,19 @@ func main() {
 
 	command, err := parse(args)
 	if err != nil {
-		showError(err)
+		throw(err)
 		return
 	}
 
 	err = command.Execute()
 	if err != nil {
-		showError(err)
+		throw(err)
 	}
 }
 
-func showError(err error) {
-	fmt.Printf("ERROR: %s.", err)
+func throw(err error) {
+	fmt.Printf("ERROR: %s.\n", err)
+	os.Exit(1)
 }
 
 func parse(args []string) (Command, error) {

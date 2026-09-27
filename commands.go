@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -61,10 +62,12 @@ func NewAddCommand(argument string) (*AddCommand, error) {
 	return &c, nil
 }
 
-type RemoveCommand struct{}
+type RemoveCommand struct {
+	CommandName string
+}
 
-func NewRemoveCommand() *RemoveCommand {
-	c := RemoveCommand{}
+func NewRemoveCommand(argument string) *RemoveCommand {
+	c := RemoveCommand{argument}
 
 	return &c
 }
@@ -164,5 +167,23 @@ func (c AddCommand) Execute() error {
 }
 
 func (c RemoveCommand) Execute() error {
-	return errors.New("command 'remove' not yet implemented")
+	userData, err := LoadUserData()
+	if err != nil {
+		return err
+	}
+
+	taskIdx := -1
+	for i, task := range userData.Tasks {
+		if task.Name == c.CommandName {
+			taskIdx = i
+			break
+		}
+	}
+
+	if taskIdx == -1 {
+		return fmt.Errorf("task with name '%s' does not exist", c.CommandName)
+	}
+
+	userData.Tasks = slices.Delete(userData.Tasks, taskIdx, taskIdx+1)
+	return SaveUserData(userData)
 }

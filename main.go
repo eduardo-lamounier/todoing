@@ -47,7 +47,15 @@ func parse(args []string) (Command, error) {
 
 		return NewAddCommand(args[1])
 	case "remove":
-		return NewRemoveCommand(), nil
+		if len(args[1:]) < 1 {
+			return nil, fmt.Errorf("command 'remove' expects an argument")
+		}
+
+		if len(args[1:]) > 1 {
+			return nil, fmt.Errorf("too many arguments passed to command 'remove'")
+		}
+
+		return NewRemoveCommand(args[1]), nil
 	default:
 		if len(args[0]) < 2 || !strings.HasPrefix(args[0], "-") {
 			return nil, fmt.Errorf("unknown command '%s'", args[0])

@@ -37,7 +37,15 @@ func parse(args []string) (Command, error) {
 	case "list":
 		return NewListCommand(), nil
 	case "add":
-		return NewAddCommand(), nil
+		if len(args[1:]) < 1 {
+			return nil, fmt.Errorf("command 'add' expects an argument")
+		}
+
+		if len(args[1:]) > 1 {
+			return nil, fmt.Errorf("too many arguments passed to command 'add'")
+		}
+
+		return NewAddCommand(args[1])
 	case "remove":
 		return NewRemoveCommand(), nil
 	default:

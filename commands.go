@@ -51,12 +51,14 @@ func NewListCommand() *ListCommand {
 	return &c
 }
 
-type AddCommand struct{}
+type AddCommand struct {
+	CommandName string
+}
 
-func NewAddCommand() *AddCommand {
-	c := AddCommand{}
+func NewAddCommand(argument string) (*AddCommand, error) {
+	c := AddCommand{argument}
 
-	return &c
+	return &c, nil
 }
 
 type RemoveCommand struct{}
@@ -150,7 +152,15 @@ func (c ListCommand) Execute() error {
 }
 
 func (c AddCommand) Execute() error {
-	return errors.New("command 'add' not yet implemented")
+	task := NewTask(c.CommandName)
+
+	userData, err := LoadUserData()
+	if err != nil {
+		return err
+	}
+
+	userData.Tasks = append(userData.Tasks, *task)
+	return SaveUserData(userData)
 }
 
 func (c RemoveCommand) Execute() error {

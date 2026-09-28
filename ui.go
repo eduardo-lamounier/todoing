@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/fatih/color"
 )
 
 // Returns the total width of the resulting table
@@ -57,10 +59,14 @@ func PrintTable(title string,
 
 	totalWidth := totalWidth(rows, colsName, padding)
 
+	colored := color.New(color.FgHiWhite)
+
 	var buff bytes.Buffer
 	tabWriter := tabwriter.NewWriter(
 		&buff, minWidth, tabWidth, padding, padChar, flags,
 	)
+
+	colored.Printf("%*s\n\n", totalWidth/2+len(title)/2, title)
 
 	// Printing the col names:
 	for _, colName := range colsName[:n-1] {
@@ -84,7 +90,9 @@ func PrintTable(title string,
 
 	// Printing into stdout:
 	lines := strings.Split(buff.String(), "\n")
-	for _, line := range lines {
+
+	colored.Println(lines[0])
+	for _, line := range lines[1:] {
 		fmt.Println(line)
 	}
 

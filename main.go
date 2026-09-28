@@ -3,28 +3,25 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
 
 func main() {
+	log.SetFlags(0) // Removes the timestamp when logging
+
 	args := os.Args[1:]
 
 	command, err := parse(args)
 	if err != nil {
-		throw(err)
-		return
+		log.Fatalf("ERROR: %s.", err)
 	}
 
 	err = command.Execute()
 	if err != nil {
-		throw(err)
+		log.Fatalf("ERROR: %s.", err)
 	}
-}
-
-func throw(err error) {
-	fmt.Printf("ERROR: %s.\n", err)
-	os.Exit(1)
 }
 
 func parse(args []string) (Command, error) {

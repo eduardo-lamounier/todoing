@@ -1,11 +1,15 @@
 package main
 
-import "time"
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 type Task struct {
 	Name     string       `json:"name"`
-	State    TaskState    `json:"category,omitempty"`
-	Priority TaskPriority `json:"priority,omitempty"`
+	State    TaskState    `json:"category"`
+	Priority TaskPriority `json:"priority"`
 	Deadline *time.Time   `json:"deadline,omitempty"`
 }
 
@@ -51,26 +55,6 @@ var priorityNames = map[TaskPriority]string{
 	TaskUrgentPriority: "urgent",
 }
 
-func (t *Task) WithState(state TaskState) *Task {
-	t.State = state
-	return t
-}
-
-func (t *Task) WithPriority(priority TaskPriority) *Task {
-	t.Priority = priority
-	return t
-}
-
-func (t *Task) WithDeadline(deadline time.Time) *Task {
-	t.Deadline = &deadline
-	return t
-}
-
-func (t *Task) WithNoDeadline() *Task {
-	t.Deadline = nil
-	return t
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 func (s TaskState) String() string {
@@ -79,4 +63,44 @@ func (s TaskState) String() string {
 
 func (p TaskPriority) String() string {
 	return priorityNames[p]
+}
+
+func (s TaskState) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.String())
+}
+
+func (p TaskPriority) MarshalJSON() ([]byte, error) {
+	return json.Marshal(p.String())
+}
+
+func (s *TaskState) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return err
+	}
+
+	for state, name := range stateNames {
+		if name == str {
+			*s = state
+			return nil
+		}
+	}
+
+	return fmt.Errorf("invalid byte sequence to convert to TaskState")
+}
+
+func (p *TaskPriority) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return err
+	}
+
+	for priority, name := range priorityNames {
+		if name == str {
+			*p = priority
+			return nil
+		}
+	}
+
+	return fmt.Errorf("invalid byte sequence to convert to TaskPriority")
 }

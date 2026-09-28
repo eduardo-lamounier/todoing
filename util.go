@@ -11,3 +11,9 @@ func Capitalize(s string) string {
 	chars[0] = unicode.ToUpper(chars[0])
 	return string(chars)
 }
+
+func Assert(cond bool, v ...any) {
+	if !cond {
+		panic(v)
+	}
+}

@@ -36,7 +36,7 @@ func PrintTable(title string,
 	noRowMessage string,
 	rows [][]string,
 	colsName []string,
-) error {
+) {
 	const (
 		minWidth = 0
 		tabWidth = 4
@@ -47,14 +47,10 @@ func PrintTable(title string,
 
 	n := len(colsName)
 
-	if n == 0 {
-		return fmt.Errorf("no column names passed")
-	}
+	Assert(n > 0, "The column names should be specified.")
 
 	for _, row := range rows {
-		if len(row) != n {
-			return fmt.Errorf("all rows should have the same amount of columns")
-		}
+		Assert(len(row) == n, "All rows must have the same amount of columns")
 	}
 
 	totalWidth := totalWidth(rows, colsName, padding)
@@ -95,6 +91,4 @@ func PrintTable(title string,
 	for _, line := range lines[1:] {
 		fmt.Println(line)
 	}
-
-	return nil
 }

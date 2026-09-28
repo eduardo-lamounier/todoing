@@ -1,9 +1,7 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"log"
 	"slices"
 	"strings"
 	"time"
@@ -81,7 +79,7 @@ func (c RootCommand) Execute() error {
 		fmt.Println("todoing", version)
 	default:
 		// Shouldn't reach here
-		return errors.New("some flag is required when no command is passed")
+		panic("Some flag must be specified to the root command.")
 	}
 
 	return nil
@@ -127,10 +125,7 @@ func (c ListCommand) Execute() error {
 		rows = append(rows, row)
 	}
 
-	err = PrintTable("[ Tasks ]", "You have no tasks.", rows, colsName)
-	if err != nil {
-		log.Fatal("error when listing your tasks:", err)
-	}
+	PrintTable("[ Tasks ]", "You have no tasks.", rows, colsName)
 	return nil
 }
 

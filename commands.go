@@ -3,10 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"os"
+	"log"
 	"slices"
 	"strings"
-	"text/tabwriter"
 	"time"
 )
 
@@ -94,18 +93,6 @@ func (c ListCommand) Execute() error {
 		return err
 	}
 
-	const (
-		minWidth = 0
-		tabWidth = 4
-		padding  = 4
-		padChar  = ' '
-		flags    = 0
-	)
-
-	tabWriter := tabwriter.NewWriter(
-		os.Stdout, minWidth, tabWidth, padding, padChar, flags,
-	)
-
 	formatPriority := func(priority TaskPriority) string {
 		return Capitalize(priority.String())
 	}
@@ -121,36 +108,29 @@ func (c ListCommand) Execute() error {
 		return Capitalize(strings.ReplaceAll(state.String(), "_", " "))
 	}
 
-	widthCols := [4]int{
-		len("Name:"), len("Priority:"), len("Deadline:"), len("State:"),
+	colsName := []string{
+		"Name:",
+		"Priority:",
+		"Deadline:",
+		"State:",
 	}
 
+	var rows [][]string
 	for _, task := range userData.Tasks {
-		widthCols[0] = max(widthCols[0], len(task.Name))
-		widthCols[1] = max(widthCols[1], len(formatPriority(task.Priority)))
-		widthCols[2] = max(widthCols[2], len(formatDeadline(task.Deadline)))
-		widthCols[3] = max(widthCols[3], len(formatState(task.State)))
-	}
-
-	totalWidth := (len(widthCols) - 1) * padding
-	for _, widthCol := range widthCols {
-		totalWidth += widthCol
-	}
-
-	const title = "[ Tasks ]"
-	fmt.Printf("%*s\n\n", totalWidth/2+len(title)/2, title)
-	fmt.Fprintf(tabWriter, "Name:\tPriority:\tDeadline:\tState:\n")
-	for _, task := range userData.Tasks {
-		fmt.Fprintf(
-			tabWriter, "%v\t%v\t%v\t%v\n",
+		row := []string{
 			task.Name,
 			formatPriority(task.Priority),
 			formatDeadline(task.Deadline),
 			formatState(task.State),
-		)
-	}
-	tabWriter.Flush()
+		}
 
+		rows = append(rows, row)
+	}
+
+	err = PrintTable("[ Tasks ]", "You have no tasks.", rows, colsName)
+	if err != nil {
+		log.Fatal("error when listing your tasks:", err)
+	}
 	return nil
 }
 

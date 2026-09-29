@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -63,6 +64,14 @@ func (s TaskState) String() string {
 
 func (p TaskPriority) String() string {
 	return priorityNames[p]
+}
+
+func (s TaskState) HumanText() string {
+	return Capitalize(strings.ReplaceAll(s.String(), "_", " "))
+}
+
+func (p TaskPriority) HumanText() string {
+	return Capitalize(p.String())
 }
 
 func (s TaskState) MarshalJSON() ([]byte, error) {

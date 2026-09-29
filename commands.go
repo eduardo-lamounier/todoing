@@ -91,19 +91,11 @@ func (c ListCommand) Execute() error {
 		return err
 	}
 
-	formatPriority := func(priority TaskPriority) string {
-		return Capitalize(priority.String())
-	}
-
 	formatDeadline := func(deadline *time.Time) string {
 		if deadline == nil {
 			return "N/A"
 		}
 		return deadline.Format("01/02/2006")
-	}
-
-	formatState := func(state TaskState) string {
-		return Capitalize(strings.ReplaceAll(state.String(), "_", " "))
 	}
 
 	colsName := []string{
@@ -119,9 +111,9 @@ func (c ListCommand) Execute() error {
 	for _, task := range userData.Tasks {
 		row := []string{
 			task.Name,
-			formatPriority(task.Priority),
+			task.Priority.HumanText(),
 			formatDeadline(task.Deadline),
-			formatState(task.State),
+			task.State.HumanText(),
 		}
 
 		rows = append(rows, row)

@@ -186,8 +186,18 @@ func inputTaskDeadline() (*time.Time, error) {
 	return &selected, nil
 }
 
-// Execute TODO: Do not allow the user to add a task with a non-unique name
 func (c AddCommand) Execute() error {
+	userData, err := LoadUserData()
+	if err != nil {
+		return err
+	}
+
+	for _, task := range userData.Tasks {
+		if task.Name == c.CommandName {
+			return fmt.Errorf("task \"%s\" already exists", task.Name)
+		}
+	}
+
 	const (
 		priorityInputText = "Priority: "
 		deadlineInputText = "Deadline: "
@@ -195,8 +205,6 @@ func (c AddCommand) Execute() error {
 	)
 
 	fmt.Printf("[ %s ]\n", c.CommandName)
-
-	var err error
 
 	task := NewTask(c.CommandName)
 
@@ -209,11 +217,6 @@ func (c AddCommand) Execute() error {
 		return err
 	}
 	task.Deadline, err = inputTaskDeadline()
-	if err != nil {
-		return err
-	}
-
-	userData, err := LoadUserData()
 	if err != nil {
 		return err
 	}

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"atomicgo.dev/keyboard"
+	"atomicgo.dev/keyboard/keys"
 	"github.com/fatih/color"
 )
 
@@ -92,4 +94,43 @@ func PrintTable(title string,
 	for _, line := range lines[1:] {
 		fmt.Println(line)
 	}
+}
+
+// ScrollInput It's guaranteed that even in case of an input error, the returned
+// selected index will be in [0, maximum[.
+func ScrollInput(maximum int, getInputText func(int) string, newline bool,
+) (int, error) {
+	current := 0
+
+	showInputText := func() {
+		ConsoleClearLine()
+		inputText := getInputText(current)
+		inputText = strings.Trim(inputText, "\n") // Makes sure there isn't any
+		// newline
+		fmt.Print(inputText)
+	}
+
+	showInputText()
+
+	err := keyboard.Listen(func(key keys.Key) (bool, error) {
+		switch key.Code {
+		case keys.CtrlC:
+			return true, fmt.Errorf("the program got interrupted")
+		case keys.Down:
+			current = Mod(current-1, maximum)
+		case keys.Up:
+			current = Mod(current+1, maximum)
+		case keys.Enter:
+			return true, nil
+		}
+
+		showInputText()
+		return false, nil
+	})
+
+	if newline {
+		fmt.Println()
+	}
+
+	return current, err
 }

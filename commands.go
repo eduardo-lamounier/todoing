@@ -114,6 +114,8 @@ func (c ListCommand) Execute() error {
 	}
 
 	var rows [][]string
+	rows = slices.Grow(rows, len(userData.Tasks))
+
 	for _, task := range userData.Tasks {
 		row := []string{
 			task.Name,

@@ -1,6 +1,9 @@
 package main
 
-import "unicode"
+import (
+	"fmt"
+	"unicode"
+)
 
 func Capitalize(s string) string {
 	if len(s) == 0 {
@@ -16,4 +19,12 @@ func Assert(cond bool, v ...any) {
 	if !cond {
 		panic(v)
 	}
+}
+
+func Mod(n int, d int) int {
+	return (n%d + d) % d
+}
+
+func ConsoleClearLine() {
+	fmt.Print("\r\033[K")
 }

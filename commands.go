@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"slices"
-	"strings"
 	"time"
 )
 
@@ -123,8 +122,91 @@ func (c ListCommand) Execute() error {
 	return nil
 }
 
+func inputTaskPriority() (TaskPriority, error) {
+	priorities := []TaskPriority{
+		TaskMediumPriority,
+		TaskHighPriority,
+		TaskUrgentPriority,
+		TaskLowPriority,
+	}
+
+	selected, err := ScrollInput(len(priorities), func(currentPriority int) string {
+		return fmt.Sprint("Priority: ", priorities[currentPriority].HumanText())
+	}, true)
+
+	return priorities[selected], err
+}
+
+func inputTaskState() (TaskState, error) {
+	states := []TaskState{TaskPending, TaskInProgress, TaskCompleted}
+
+	selected, err := ScrollInput(len(states), func(currentState int) string {
+		return fmt.Sprint("State: ", states[currentState].HumanText())
+	}, true)
+
+	return states[selected], err
+}
+
+func inputTaskDeadline() (*time.Time, error) {
+	now := time.Now()
+
+	selectedMonth, err := ScrollInput(12, func(currentMonth int) string {
+		return fmt.Sprintf("Deadline: %2v/", currentMonth+1)
+	}, false)
+	if err != nil {
+		return nil, err
+	}
+
+	// Assumes all months have 31 days for simplicity
+	selectedDay, err := ScrollInput(31, func(currentDay int) string {
+		return fmt.Sprintf("Deadline: %2v/%2v", selectedMonth+1, currentDay+1)
+	}, false)
+	if err != nil {
+		return nil, err
+	}
+
+	selectedYear, err := ScrollInput(
+		now.Year()+10,
+		func(currentYear int) string {
+			return fmt.Sprintf("Deadline: %2v/%2v/%4v",
+				selectedMonth+1, selectedDay+1, currentYear+1)
+		},
+		true,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	selected := time.Date(selectedYear+1, time.Month(selectedMonth+1), selectedDay+1,
+		0, 0, 0, 0, now.Location())
+	return &selected, nil
+}
+
 func (c AddCommand) Execute() error {
+	const (
+		priorityInputText = "Priority: "
+		deadlineInputText = "Deadline: "
+		stateInputText    = "State: "
+	)
+
+	fmt.Printf("[ %s ]\n", c.CommandName)
+
+	var err error
+
 	task := NewTask(c.CommandName)
+
+	task.Priority, err = inputTaskPriority()
+	if err != nil {
+		return err
+	}
+	task.State, err = inputTaskState()
+	if err != nil {
+		return err
+	}
+	task.Deadline, err = inputTaskDeadline()
+	if err != nil {
+		return err
+	}
 
 	userData, err := LoadUserData()
 	if err != nil {

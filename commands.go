@@ -147,6 +147,10 @@ func inputTaskState() (TaskState, error) {
 	return states[selected], err
 }
 
+// TODO:
+//   - dates should start from the current time
+//   - there should have an option for not associating a deadline to a task
+//     (as they're optional)
 func inputTaskDeadline() (*time.Time, error) {
 	now := time.Now()
 
@@ -182,6 +186,7 @@ func inputTaskDeadline() (*time.Time, error) {
 	return &selected, nil
 }
 
+// Execute TODO: Do not allow the user to add a task with a non-unique name
 func (c AddCommand) Execute() error {
 	const (
 		priorityInputText = "Priority: "

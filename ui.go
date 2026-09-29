@@ -64,6 +64,11 @@ func PrintTable(title string,
 
 	colored.Printf("%*s\n\n", totalWidth/2+len(title)/2, title)
 
+	if len(rows) == 0 {
+		fmt.Printf("%*s\n", totalWidth/2+len(noRowMessage)/2, noRowMessage)
+		return
+	}
+
 	// Printing the col names:
 	for _, colName := range colsName[:n-1] {
 		fmt.Fprintf(tabWriter, "%s\t", colName)
@@ -76,10 +81,6 @@ func PrintTable(title string,
 			fmt.Fprintf(tabWriter, "%v\t", s)
 		}
 		fmt.Fprintf(tabWriter, "%v\n", row[len(row)-1])
-	}
-
-	if len(rows) == 0 {
-		fmt.Printf("%*s\n", totalWidth/2+len(noRowMessage)/2, noRowMessage)
 	}
 
 	tabWriter.Flush()

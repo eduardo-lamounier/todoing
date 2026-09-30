@@ -155,8 +155,20 @@ func inputTaskState() (TaskState, error) {
 func inputTaskDeadline() (*time.Time, error) {
 	now := time.Now()
 
+	selectedYear, err := ScrollInput(
+		now.Year()+10,
+		func(currentYear int) string {
+			return fmt.Sprintf("Deadline: %4v/",
+				currentYear+1)
+		},
+		true,
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	selectedMonth, err := ScrollInput(12, func(currentMonth int) string {
-		return fmt.Sprintf("Deadline: %2v/", currentMonth+1)
+		return fmt.Sprintf("Deadline: %4v/%2v/", selectedYear+1, currentMonth+1)
 	}, false)
 	if err != nil {
 		return nil, err
@@ -164,20 +176,8 @@ func inputTaskDeadline() (*time.Time, error) {
 
 	// Assumes all months have 31 days for simplicity
 	selectedDay, err := ScrollInput(31, func(currentDay int) string {
-		return fmt.Sprintf("Deadline: %2v/%2v", selectedMonth+1, currentDay+1)
+		return fmt.Sprintf("Deadline: %4v/%2v/%2v", selectedYear+1, selectedMonth+1, currentDay+1)
 	}, false)
-	if err != nil {
-		return nil, err
-	}
-
-	selectedYear, err := ScrollInput(
-		now.Year()+10,
-		func(currentYear int) string {
-			return fmt.Sprintf("Deadline: %2v/%2v/%4v",
-				selectedMonth+1, selectedDay+1, currentYear+1)
-		},
-		true,
-	)
 	if err != nil {
 		return nil, err
 	}

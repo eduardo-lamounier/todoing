@@ -15,12 +15,12 @@ func main() {
 
 	command, err := parse(args)
 	if err != nil {
-		log.Fatalf("ERROR: %s.", err)
+		logFatalError(err)
 	}
 
 	err = command.Execute()
 	if err != nil {
-		log.Fatalf("ERROR: %s.", err)
+		logFatalError(err)
 	}
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"slices"
 	"time"
@@ -59,11 +60,11 @@ func NewAddCommand(argument string) (*AddCommand, error) {
 }
 
 type RemoveCommand struct {
-	CommandName string
+	TaskNames []string
 }
 
-func NewRemoveCommand(argument string) *RemoveCommand {
-	c := RemoveCommand{argument}
+func NewRemoveCommand(arguments []string) *RemoveCommand {
+	c := RemoveCommand{arguments}
 
 	return &c
 }
@@ -231,18 +232,29 @@ func (c RemoveCommand) Execute() error {
 		return err
 	}
 
-	taskIdx := -1
+	// A set. Stores the tasks yet to be removed (a key is the task's name)
+	toRemove := make(map[string]struct{})
+
+	for _, taskName := range c.TaskNames {
+		toRemove[taskName] = struct{}{}
+	}
+
 	for i, task := range userData.Tasks {
-		if task.Name == c.CommandName {
-			taskIdx = i
-			break
+		if _, shouldRemove := toRemove[task.Name]; shouldRemove {
+			userData.Tasks = slices.Delete(userData.Tasks, i, i+1)
+			delete(toRemove, task.Name)
 		}
 	}
 
-	if taskIdx == -1 {
-		return fmt.Errorf("task with name '%s' does not exist", c.CommandName)
+	var errs []error
+	for taskName := range toRemove {
+		// Any task remaining in `toRemove` weren't found in the user's data:
+		errs = append(errs, fmt.Errorf("task with name \"%s\" does not exist", taskName))
 	}
 
-	userData.Tasks = slices.Delete(userData.Tasks, taskIdx, taskIdx+1)
-	return SaveUserData(userData)
+	if err := SaveUserData(userData); err != nil {
+		errs = append(errs, err)
+	}
+
+	return errors.Join(errs...)
 }

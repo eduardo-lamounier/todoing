@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -36,4 +37,8 @@ func logFatalError(err error) {
 		fmt.Fprintf(os.Stderr, "ERROR: %s.\n", errMsg)
 	}
 	os.Exit(1)
+}
+
+func DaysInMonth(m time.Month, year int) int {
+	return time.Date(year, m+1, 0, 0, 0, 0, 0, time.UTC).Day()
 }

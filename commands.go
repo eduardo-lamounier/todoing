@@ -175,7 +175,7 @@ func inputTaskDeadline() (*time.Time, error) {
 	}
 
 	// Assumes all months have 31 days for simplicity
-	selectedDay, err := ScrollInput(31, func(currentDay int) string {
+	selectedDay, err := ScrollInput(DaysInMonth(time.Month(selectedMonth+1), selectedYear+1), func(currentDay int) string {
 		return fmt.Sprintf("Deadline: %4v/%2v/%2v", selectedYear+1, selectedMonth+1, currentDay+1)
 	}, false)
 	if err != nil {

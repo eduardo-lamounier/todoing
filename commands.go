@@ -131,7 +131,7 @@ func inputTaskPriority() (TaskPriority, error) {
 		TaskLowPriority,
 	}
 
-	selected, err := ScrollInput(len(priorities), func(currentPriority int) string {
+	selected, err := WrapInput(-1, 0, len(priorities), func(currentPriority int) string {
 		return fmt.Sprint("Priority: ", priorities[currentPriority].HumanText())
 	}, true)
 
@@ -141,7 +141,7 @@ func inputTaskPriority() (TaskPriority, error) {
 func inputTaskState() (TaskState, error) {
 	states := []TaskState{TaskPending, TaskInProgress, TaskCompleted}
 
-	selected, err := ScrollInput(len(states), func(currentState int) string {
+	selected, err := WrapInput(-1, 0, len(states), func(currentState int) string {
 		return fmt.Sprint("State: ", states[currentState].HumanText())
 	}, true)
 
@@ -155,34 +155,36 @@ func inputTaskState() (TaskState, error) {
 func inputTaskDeadline() (*time.Time, error) {
 	now := time.Now()
 
-	selectedYear, err := ScrollInput(
-		now.Year()+10,
+	selectedYear, err := WrapInput(
+		-1, now.Year(), now.Year()+10+1,
 		func(currentYear int) string {
-			return fmt.Sprintf("Deadline: %4v/",
-				currentYear+1)
+			return fmt.Sprintf("Deadline [YYYY/MM/DD]: %4v/", currentYear)
 		},
-		true,
+		false,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	selectedMonth, err := ScrollInput(12, func(currentMonth int) string {
-		return fmt.Sprintf("Deadline: %4v/%2v/", selectedYear+1, currentMonth+1)
-	}, false)
+	selectedMonth, err := WrapInput(-1, int(now.Month()), 12+1,
+		func(currentMonth int) string {
+			return fmt.Sprintf("Deadline [YYYY/MM/DD]: %4v/%2v/", selectedYear, currentMonth)
+		}, false)
 	if err != nil {
 		return nil, err
 	}
 
-	// Assumes all months have 31 days for simplicity
-	selectedDay, err := ScrollInput(DaysInMonth(time.Month(selectedMonth+1), selectedYear+1), func(currentDay int) string {
-		return fmt.Sprintf("Deadline: %4v/%2v/%2v", selectedYear+1, selectedMonth+1, currentDay+1)
-	}, false)
+	maxDay := DaysInMonth(time.Month(selectedMonth), selectedYear)
+	selectedDay, err := WrapInput(min(now.Day(), maxDay), 1, maxDay+1,
+		func(currentDay int) string {
+			return fmt.Sprintf("Deadline [YYYY/MM/DD]: %4v/%2v/%2v",
+				selectedYear, selectedMonth, currentDay)
+		}, true)
 	if err != nil {
 		return nil, err
 	}
 
-	selected := time.Date(selectedYear+1, time.Month(selectedMonth+1), selectedDay+1,
+	selected := time.Date(selectedYear, time.Month(selectedMonth), selectedDay,
 		0, 0, 0, 0, now.Location())
 	return &selected, nil
 }

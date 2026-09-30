@@ -50,7 +50,7 @@ func NewListCommand() *ListCommand {
 }
 
 type AddCommand struct {
-	CommandName string
+	TaskName string
 }
 
 func NewAddCommand(argument string) (*AddCommand, error) {
@@ -194,7 +194,7 @@ func (c AddCommand) Execute() error {
 	}
 
 	for _, task := range userData.Tasks {
-		if task.Name == c.CommandName {
+		if task.Name == c.TaskName {
 			return fmt.Errorf("task \"%s\" already exists", task.Name)
 		}
 	}
@@ -205,9 +205,9 @@ func (c AddCommand) Execute() error {
 		stateInputText    = "State: "
 	)
 
-	fmt.Printf("[ %s ]\n", c.CommandName)
+	fmt.Printf("[ %s ]\n", c.TaskName)
 
-	task := NewTask(c.CommandName)
+	task := NewTask(c.TaskName)
 
 	task.Priority, err = inputTaskPriority()
 	if err != nil {

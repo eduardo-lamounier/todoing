@@ -97,10 +97,13 @@ func PrintTable(title string,
 }
 
 // ScrollInput It's guaranteed that even in case of an input error, the returned
-// selected index will be in [0, maximum[.
-func ScrollInput(maximum int, getInputText func(int) string, newline bool,
+// selected index will be in [low, high[.
+//
+// If `begin` < `low`, then the beggining is `low`.
+func ScrollInput(begin int, low int, high int,
+	getInputText func(int) string, newline bool,
 ) (int, error) {
-	current := 0
+	current := max(begin, low)
 
 	showInputText := func() {
 		ConsoleClearLine()
@@ -117,9 +120,9 @@ func ScrollInput(maximum int, getInputText func(int) string, newline bool,
 		case keys.CtrlC:
 			return true, fmt.Errorf("the program got interrupted")
 		case keys.Down:
-			current = Mod(current-1, maximum)
+			current = low + Mod(current-1-low, high-low)
 		case keys.Up:
-			current = Mod(current+1, maximum)
+			current = low + Mod(current+1-low, high-low)
 		case keys.Enter:
 			return true, nil
 		}

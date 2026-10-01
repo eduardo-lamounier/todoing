@@ -159,7 +159,6 @@ func inputTaskState() (TaskState, error) {
 }
 
 // TODO:
-//   - dates should start from the current time
 //   - there should have an option for not associating a deadline to a task
 //     (as they're optional)
 func inputTaskDeadline() (*time.Time, error) {

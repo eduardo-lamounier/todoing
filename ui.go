@@ -96,11 +96,11 @@ func PrintTable(title string,
 	}
 }
 
-// WrapInput It's guaranteed that even in case of an input error, the returned
+// WrapPrompt It's guaranteed that even in case of an input error, the returned
 // selected index will be in [low, high[.
 //
 // If `begin` < `low`, then the beggining is `low`.
-func WrapInput(begin int, low int, high int,
+func WrapPrompt(begin int, low int, high int,
 	getInputText func(int) string, newline bool,
 ) (int, error) {
 	current := max(begin, low)

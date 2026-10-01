@@ -141,7 +141,7 @@ func inputTaskPriority() (TaskPriority, error) {
 		TaskLowPriority,
 	}
 
-	selected, err := WrapInput(-1, 0, len(priorities), func(currentPriority int) string {
+	selected, err := WrapPrompt(-1, 0, len(priorities), func(currentPriority int) string {
 		return fmt.Sprint("Priority: ", priorities[currentPriority].HumanText())
 	}, true)
 
@@ -151,7 +151,7 @@ func inputTaskPriority() (TaskPriority, error) {
 func inputTaskState() (TaskState, error) {
 	states := []TaskState{TaskPending, TaskInProgress, TaskCompleted}
 
-	selected, err := WrapInput(-1, 0, len(states), func(currentState int) string {
+	selected, err := WrapPrompt(-1, 0, len(states), func(currentState int) string {
 		return fmt.Sprint("State: ", states[currentState].HumanText())
 	}, true)
 
@@ -169,7 +169,7 @@ func inputTaskDeadline() (*time.Time, error) {
 
 	now := time.Now()
 
-	selectedYear, err := WrapInput(
+	selectedYear, err := WrapPrompt(
 		-1, now.Year(), now.Year()+10+1,
 		func(currentYear int) string {
 			return fmt.Sprintf("Deadline [YYYY/MM/DD]: %4v/", currentYear)
@@ -180,7 +180,7 @@ func inputTaskDeadline() (*time.Time, error) {
 		return nil, err
 	}
 
-	selectedMonth, err := WrapInput(-1, int(now.Month()), 12+1,
+	selectedMonth, err := WrapPrompt(-1, int(now.Month()), 12+1,
 		func(currentMonth int) string {
 			return fmt.Sprintf("Deadline [YYYY/MM/DD]: %4v/%2v/", selectedYear, currentMonth)
 		}, false)
@@ -189,7 +189,7 @@ func inputTaskDeadline() (*time.Time, error) {
 	}
 
 	maxDay := DaysInMonth(time.Month(selectedMonth), selectedYear)
-	selectedDay, err := WrapInput(min(now.Day(), maxDay), 1, maxDay+1,
+	selectedDay, err := WrapPrompt(min(now.Day(), maxDay), 1, maxDay+1,
 		func(currentDay int) string {
 			return fmt.Sprintf("Deadline [YYYY/MM/DD]: %4v/%2v/%2v",
 				selectedYear, selectedMonth, currentDay)

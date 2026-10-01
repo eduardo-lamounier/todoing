@@ -9,8 +9,6 @@ import (
 
 const helpMessage = `usage: todoing [-v | --version] [-h | --help] <command> [args]
 
-NOTE: The below commands are not yet implemented.
-
 list: Lists all the added tasks.
 
 add: Adds a new task.

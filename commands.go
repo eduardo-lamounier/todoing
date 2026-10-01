@@ -158,10 +158,15 @@ func inputTaskState() (TaskState, error) {
 	return states[selected], err
 }
 
-// TODO:
-//   - there should have an option for not associating a deadline to a task
-//     (as they're optional)
 func inputTaskDeadline() (*time.Time, error) {
+	shouldInputDeadline, err := YesNoPrompt(
+		"Would you like to set a deadline for this task?", false, true,
+	)
+
+	if !shouldInputDeadline || err != nil {
+		return nil, err
+	}
+
 	now := time.Now()
 
 	selectedYear, err := WrapInput(

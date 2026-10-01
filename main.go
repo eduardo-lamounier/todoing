@@ -31,6 +31,8 @@ func parse(args []string) (Command, error) {
 	}
 
 	switch args[0] {
+	case "config":
+		return NewConfigCommand(), nil
 	case "list":
 		return NewListCommand(), nil
 	case "add":

@@ -41,6 +41,14 @@ func NewRootCommand(flag string) (*RootCommand, error) {
 	return &c, nil
 }
 
+type ConfigCommand struct{}
+
+func NewConfigCommand() *ConfigCommand {
+	c := ConfigCommand{}
+
+	return &c
+}
+
 type ListCommand struct{}
 
 func NewListCommand() *ListCommand {
@@ -83,6 +91,10 @@ func (c RootCommand) Execute() error {
 	}
 
 	return nil
+}
+
+func (c ConfigCommand) Execute() error {
+	return fmt.Errorf("command 'config' not yet implemented")
 }
 
 func (c ListCommand) Execute() error {

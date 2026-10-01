@@ -11,13 +11,16 @@ import (
 )
 
 const (
-	appFolderName    = "todoing"
-	userDataFileName = "user.json"
+	appFolderName      = "todoing"
+	userDataFileName   = "user.json"
+	userConfigFileName = "config.json"
 )
 
 type UserData struct {
 	Tasks []Task `json:"tasks"`
 }
+
+type UserConfig struct{}
 
 func getUserDataFilePath() (string, error) {
 	appDataFolderPath := filepath.Join(xdg.DataHome, appFolderName)
@@ -29,6 +32,17 @@ func getUserDataFilePath() (string, error) {
 	userDataFilePath := filepath.Join(appDataFolderPath, userDataFileName)
 
 	return userDataFilePath, nil
+}
+
+func getUserConfigFilePath() (string, error) {
+	appConfigFolderPath := filepath.Join(xdg.ConfigHome, appFolderName)
+
+	if err := os.MkdirAll(appConfigFolderPath, 0o755); err != nil {
+		return "", err
+	}
+
+	userConfigFilePath := filepath.Join(appConfigFolderPath, userConfigFileName)
+	return userConfigFilePath, nil
 }
 
 func LoadUserData() (UserData, error) {
@@ -88,4 +102,12 @@ func SaveUserData(userData UserData) error {
 	}
 
 	return nil
+}
+
+func LoadUserConfig() (UserConfig, error) {
+	return UserConfig{}, fmt.Errorf("funcionality not implemented")
+}
+
+func SaveUserConfig(userConfig UserConfig) error {
+	return fmt.Errorf("funcionality not implemented")
 }

@@ -105,6 +105,8 @@ func WrapPrompt(begin int, low int, high int,
 	getInputText func(int) string, newline bool,
 ) (int, error) {
 	cursor.Hide()
+	defer cursor.Show()
+
 	current := max(begin, low)
 
 	showInputText := func() {
@@ -138,12 +140,13 @@ func WrapPrompt(begin int, low int, high int,
 		fmt.Println()
 	}
 
-	cursor.Show()
 	return current, err
 }
 
 func YesNoPrompt(message string, yesByDefault bool, newline bool) (bool, error) {
 	cursor.Hide()
+	defer cursor.Show()
+
 	message = strings.Trim(message, "\n") // Makes sure there isn't any newline
 	fmt.Println(message)
 
@@ -182,6 +185,5 @@ func YesNoPrompt(message string, yesByDefault bool, newline bool) (bool, error) 
 		fmt.Println()
 	}
 
-	cursor.Show()
 	return confirmed, err
 }

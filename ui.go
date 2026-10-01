@@ -137,3 +137,44 @@ func WrapInput(begin int, low int, high int,
 
 	return current, err
 }
+
+func YesNoPrompt(message string, yesByDefault bool, newline bool) (bool, error) {
+	message = strings.Trim(message, "\n") // Makes sure there isn't any newline
+	fmt.Println(message)
+
+	confirmed := yesByDefault
+	inputTextLen := len("[ N ] | [ Y ]")
+
+	showInputText := func() {
+		ConsoleClearLine()
+		if confirmed {
+			fmt.Printf("%*s", len(message)/2+inputTextLen/2, "   N   | [ Y ] ")
+		} else {
+			fmt.Printf("%*s", len(message)/2+inputTextLen/2, " [ N ] |   Y   ")
+		}
+	}
+
+	showInputText()
+
+	err := keyboard.Listen(func(key keys.Key) (bool, error) {
+		switch key.Code {
+		case keys.CtrlC:
+			return true, fmt.Errorf("the program got interrupted")
+		case keys.Left:
+			confirmed = false
+		case keys.Right:
+			confirmed = true
+		case keys.Enter:
+			return true, nil
+		}
+
+		showInputText()
+		return false, nil
+	})
+
+	if newline {
+		fmt.Println()
+	}
+
+	return confirmed, err
+}

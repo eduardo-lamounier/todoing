@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	atomicgo.dev/cursor v0.2.0 // indirect
 	github.com/adrg/xdg v0.5.3 // indirect
 	github.com/containerd/console v1.0.5 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect

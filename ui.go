@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"atomicgo.dev/cursor"
 	"atomicgo.dev/keyboard"
 	"atomicgo.dev/keyboard/keys"
 	"github.com/fatih/color"
@@ -106,7 +107,8 @@ func WrapPrompt(begin int, low int, high int,
 	current := max(begin, low)
 
 	showInputText := func() {
-		ConsoleClearLine()
+		cursor.StartOfLine()
+		cursor.ClearLine()
 		inputText := getInputText(current)
 		inputText = strings.Trim(inputText, "\n") // Makes sure there isn't any
 		// newline
@@ -146,7 +148,8 @@ func YesNoPrompt(message string, yesByDefault bool, newline bool) (bool, error) 
 	inputTextLen := len("[ N ] | [ Y ]")
 
 	showInputText := func() {
-		ConsoleClearLine()
+		cursor.StartOfLine()
+		cursor.ClearLine()
 		if confirmed {
 			fmt.Printf("%*s", len(message)/2+inputTextLen/2, "   N   | [ Y ] ")
 		} else {

@@ -28,10 +28,6 @@ func Mod(n int, d int) int {
 	return (n%d + d) % d
 }
 
-func ConsoleClearLine() {
-	fmt.Print("\r\033[K")
-}
-
 func logFatalError(err error) {
 	for errMsg := range strings.SplitSeq(fmt.Sprintf("%s", err), "\n") {
 		fmt.Fprintf(os.Stderr, "ERROR: %s.\n", errMsg)

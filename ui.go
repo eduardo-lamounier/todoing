@@ -121,7 +121,7 @@ func WrapPrompt(begin int, low int, high int,
 	err := keyboard.Listen(func(key keys.Key) (bool, error) {
 		switch key.Code {
 		case keys.CtrlC:
-			return true, fmt.Errorf("the program got interrupted")
+			return true, fmt.Errorf(msgProgramInterrupted)
 		case keys.Down:
 			current = low + Mod(current-1-low, high-low)
 		case keys.Up:
@@ -165,7 +165,7 @@ func YesNoPrompt(message string, yesByDefault bool, newline bool) (bool, error) 
 	err := keyboard.Listen(func(key keys.Key) (bool, error) {
 		switch key.Code {
 		case keys.CtrlC:
-			return true, fmt.Errorf("the program got interrupted")
+			return true, fmt.Errorf(msgProgramInterrupted)
 		case keys.Left:
 			confirmed = false
 		case keys.Right:

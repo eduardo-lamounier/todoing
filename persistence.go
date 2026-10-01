@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/adrg/xdg"
 )
 
 const (
@@ -17,21 +19,16 @@ type UserData struct {
 	Tasks []Task `json:"tasks"`
 }
 
-func getUserFilePath() (string, error) {
-	configFolderPath, err := os.UserConfigDir()
-	if err != nil {
+func getUserDataFilePath() (string, error) {
+	appDataFolderPath := filepath.Join(xdg.DataHome, appFolderName)
+
+	if err := os.MkdirAll(appDataFolderPath, 0o755); err != nil {
 		return "", err
 	}
 
-	appFolderPath := filepath.Join(configFolderPath, appFolderName)
-	err = os.MkdirAll(appFolderPath, 0o755)
-	if err != nil {
-		return "", err
-	}
+	userDataFilePath := filepath.Join(appDataFolderPath, userDataFileName)
 
-	userFilePath := filepath.Join(appFolderPath, userDataFileName)
-
-	return userFilePath, nil
+	return userDataFilePath, nil
 }
 
 func LoadUserData() (UserData, error) {
@@ -39,7 +36,7 @@ func LoadUserData() (UserData, error) {
 		return fmt.Errorf("failed to load your data: %s", err)
 	}
 
-	userFilePath, err := getUserFilePath()
+	userFilePath, err := getUserDataFilePath()
 	if err != nil {
 		return UserData{}, newError(err)
 	}
@@ -71,7 +68,7 @@ func SaveUserData(userData UserData) error {
 		return fmt.Errorf("failed to save your data: %s", err)
 	}
 
-	userFilePath, err := getUserFilePath()
+	userFilePath, err := getUserDataFilePath()
 	if err != nil {
 		return newError(err)
 	}

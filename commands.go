@@ -85,7 +85,7 @@ func (c RootCommand) Execute() error {
 		fmt.Println("todoing", version)
 	default:
 		// Shouldn't reach here
-		panic("Some flag must be specified to the root command.")
+		panic("Some flag must have been specified to the root command.")
 	}
 
 	return nil

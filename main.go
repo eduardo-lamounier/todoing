@@ -34,9 +34,15 @@ func parse(args []string) (Command, error) {
 
 	switch args[0] {
 	case "config":
-		return NewConfigCommand(), nil
+		if len(args[1:]) < 1 {
+			return nil, fmt.Errorf(
+				"command 'config' expects a flag, an option or an argument",
+			)
+		}
+
+		return NewConfigCommand(args[1])
 	case "list":
-		return NewListCommand(), nil
+		return NewListCommand(args[1:])
 	case "add":
 		if len(args[1:]) < 1 {
 			return nil, fmt.Errorf("command 'add' expects an argument")
@@ -52,7 +58,7 @@ func parse(args []string) (Command, error) {
 			return nil, fmt.Errorf("command 'remove' expects at least one argument")
 		}
 
-		return NewRemoveCommand(args[1:]), nil
+		return NewRemoveCommand(args[1:])
 	default:
 		if len(args[0]) < 2 || !strings.HasPrefix(args[0], "-") {
 			return nil, fmt.Errorf("unknown command '%s'", args[0])

@@ -9,11 +9,15 @@ import (
 
 const helpMessage = `usage: todoing [-v | --version] [-h | --help] <command> [args]
 
-list: Lists all the added tasks.
+Supported commands:
 
-add: Adds a new task.
+  list      Lists all the current tasks.
 
-remove: Removes the specified task.`
+  add       Adds a new task with the specified name.
+
+  remove    Removes the task with the specified name.
+
+You can use the [ -h | --help ] flag in any command to see its detailed reference.`
 
 const version = "1.0.0"
 

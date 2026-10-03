@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strings"
 	"time"
 )
 
@@ -43,40 +44,96 @@ func NewRootCommand(flag string) (*RootCommand, error) {
 	return &c, nil
 }
 
-type ConfigCommand struct{}
-
-func NewConfigCommand() *ConfigCommand {
-	c := ConfigCommand{}
-
-	return &c
+type ConfigCommand struct {
+	ShowHelp bool
 }
 
-type ListCommand struct{}
+func NewConfigCommand(flag string) (*ConfigCommand, error) {
+	c := ConfigCommand{
+		ShowHelp: flag == "-h" || flag == "--help",
+	}
 
-func NewListCommand() *ListCommand {
-	c := ListCommand{}
+	if !c.ShowHelp {
+		return nil, fmt.Errorf("unknown flag '%s' for command 'config'", flag)
+	}
 
-	return &c
+	return &c, nil
+}
+
+type ListCommand struct {
+	ShowHelp bool
+}
+
+func NewListCommand(flags []string) (*ListCommand, error) {
+	c := ListCommand{
+		ShowHelp: slices.Contains(flags, "-h") || slices.Contains(flags, "--help"),
+	}
+
+	var errs []error
+	for _, flag := range flags {
+		if len(flag) < 2 || !strings.HasPrefix(flag, "-") {
+			continue
+		}
+
+		errs = append(
+			errs,
+			fmt.Errorf("unknown flag '%s' for command 'list'", flag),
+		)
+	}
+
+	return &c, errors.Join(errs...)
 }
 
 type AddCommand struct {
+	ShowHelp bool
+
 	TaskName string
 }
 
-func NewAddCommand(argument string) (*AddCommand, error) {
-	c := AddCommand{argument}
+func NewAddCommand(param string) (*AddCommand, error) {
+	var c AddCommand
+	if len(param) < 2 || !strings.HasPrefix(param, "-") {
+		c = AddCommand{false, param}
+		return &c, nil
+	}
+
+	c = AddCommand{
+		ShowHelp: param == "-h" || param == "--help",
+	}
+
+	if !c.ShowHelp {
+		return nil, fmt.Errorf("unknown flag '%s' for command 'add'", param)
+	}
 
 	return &c, nil
 }
 
 type RemoveCommand struct {
+	ShowHelp bool
+
 	TaskNames []string
 }
 
-func NewRemoveCommand(arguments []string) *RemoveCommand {
-	c := RemoveCommand{arguments}
+func NewRemoveCommand(params []string) (*RemoveCommand, error) {
+	c := RemoveCommand{
+		ShowHelp: slices.Contains(params, "-h") || slices.Contains(params, "--help"),
+	}
 
-	return &c
+	if c.ShowHelp {
+		return &c, nil
+	}
+
+	var errs []error
+
+	for _, param := range params {
+		if len(param) >= 2 && strings.HasPrefix(param, "-") {
+			errs = append(errs, fmt.Errorf("unknown flag '%s' for command 'remove'"))
+		} else {
+			c.TaskNames = append(c.TaskNames, param)
+		}
+	}
+
+	return &c, errors.Join(errs...)
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -12,13 +12,41 @@ const helpMessage = `usage: todoing [-v | --version] [-h | --help] <command> [ar
 
 Supported commands:
 
-  list      Lists all the current tasks.
+  list               Lists all the current tasks.
 
-  add       Adds a new task with the specified name.
+  add                Adds a new task with the specified name.
 
-  remove    Removes the task with the specified name.
+  remove             Removes the task with the specified name.
+
+Flags:
+  [-h | --help]      Shows this help message.
+  [-v | --version]   Shows the version of the app that is installed.
 
 You can use the [ -h | --help ] flag in any command to see its detailed reference.`
+
+const listHelpMessage = `usage: todoing list [-h | --help]
+
+Lists all the tasks and their information: priority, state, deadline etc.
+
+Flags:
+	[-h | --help]   Shows this help message.`
+
+const addHelpMessage = `usage: todoing add [-h | --help] [task name]
+
+Adds a task with name of the specified argument.
+
+After running this command, you'll be asked to enter the other informations
+about the task iteratively (some are optional).
+
+Flags:
+	[-h | --help]   Shows this help message.`
+
+const removeHelpMessage = `usage: todoing remove [-h | --help] [task name]
+
+Removes the task with name of the specified argument.
+
+Flags:
+  [-h | --help]   Shows this help message.`
 
 const version = "1.0.0"
 
@@ -69,9 +97,17 @@ func NewListCommand(flags []string) (*ListCommand, error) {
 		ShowHelp: slices.Contains(flags, "-h") || slices.Contains(flags, "--help"),
 	}
 
+	validFlags := map[string]struct{}{
+		"-h": {}, "--help": {},
+	}
+
 	var errs []error
 	for _, flag := range flags {
 		if len(flag) < 2 || !strings.HasPrefix(flag, "-") {
+			continue
+		}
+
+		if _, isValid := validFlags[flag]; isValid {
 			continue
 		}
 
@@ -158,6 +194,11 @@ func (c ConfigCommand) Execute() error {
 }
 
 func (c ListCommand) Execute() error {
+	if c.ShowHelp {
+		fmt.Println(listHelpMessage)
+		return nil
+	}
+
 	userData, err := LoadUserData()
 	if err != nil {
 		return err
@@ -266,6 +307,11 @@ func inputTaskDeadline() (*time.Time, error) {
 }
 
 func (c AddCommand) Execute() error {
+	if c.ShowHelp {
+		fmt.Println(addHelpMessage)
+		return nil
+	}
+
 	userData, err := LoadUserData()
 	if err != nil {
 		return err
@@ -305,6 +351,11 @@ func (c AddCommand) Execute() error {
 }
 
 func (c RemoveCommand) Execute() error {
+	if c.ShowHelp {
+		fmt.Println(removeHelpMessage)
+		return nil
+	}
+
 	userData, err := LoadUserData()
 	if err != nil {
 		return err

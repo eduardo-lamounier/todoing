@@ -47,6 +47,27 @@ Removes the task with name of the specified argument.
 Flags:
   [-h | --help]   Shows this help message.`
 
+const resetHelpMessage = `usage: todoing reset [-h | --help] [task names]
+
+Marks the tasks with specified names as pending.
+
+Flags:
+	[-h | --help]   Shows this help message.`
+
+const beginHelpMessage = `usage: todoing begin [-h | --help] [task names]
+
+Marks the tasks with specified names as in progress.
+
+Flags:
+	[-h | --help]   Shows this help message.`
+
+const completeHelpMessage = `usage: todoing complete [-h | --help] [task names]
+
+Marks the tasks with specified names as completed.
+
+Flags:
+	[-h | --help]   Shows this help message.`
+
 const version = "1.0.0"
 
 type Command interface {
@@ -73,6 +94,24 @@ type AddCommand struct {
 }
 
 type RemoveCommand struct {
+	ShowHelp bool
+
+	TaskNames []string
+}
+
+type ResetCommand struct {
+	ShowHelp bool
+
+	TaskNames []string
+}
+
+type BeginCommand struct {
+	ShowHelp bool
+
+	TaskNames []string
+}
+
+type CompleteCommand struct {
 	ShowHelp bool
 
 	TaskNames []string
@@ -174,6 +213,90 @@ func NewRemoveCommand(params []string) (*RemoveCommand, error) {
 	return &c, errors.Join(errs...)
 }
 
+func NewResetCommand(params []string) (*ResetCommand, error) {
+	c := ResetCommand{
+		ShowHelp: slices.Contains(params, "-h") || slices.Contains(params, "--help"),
+	}
+
+	validFlags := map[string]struct{}{
+		"-h": {}, "--help": {},
+	}
+
+	var errs []error
+	for _, param := range params {
+		if len(param) < 2 || !strings.HasPrefix(param, "-") {
+			continue
+		}
+
+		if _, isValid := validFlags[param]; isValid {
+			continue
+		}
+
+		errs = append(
+			errs,
+			fmt.Errorf("unknown flag '%s' for command 'reset'", param),
+		)
+	}
+
+	return &c, errors.Join(errs...)
+}
+
+func NewBeginCommand(params []string) (*BeginCommand, error) {
+	c := BeginCommand{
+		ShowHelp: slices.Contains(params, "-h") || slices.Contains(params, "--help"),
+	}
+
+	validFlags := map[string]struct{}{
+		"-h": {}, "--help": {},
+	}
+
+	var errs []error
+	for _, param := range params {
+		if len(param) < 2 || !strings.HasPrefix(param, "-") {
+			continue
+		}
+
+		if _, isValid := validFlags[param]; isValid {
+			continue
+		}
+
+		errs = append(
+			errs,
+			fmt.Errorf("unknown flag '%s' for command 'begin'", param),
+		)
+	}
+
+	return &c, errors.Join(errs...)
+}
+
+func NewCompleteCommand(params []string) (*CompleteCommand, error) {
+	c := CompleteCommand{
+		ShowHelp: slices.Contains(params, "-h") || slices.Contains(params, "--help"),
+	}
+
+	validFlags := map[string]struct{}{
+		"-h": {}, "--help": {},
+	}
+
+	var errs []error
+	for _, param := range params {
+		if len(param) < 2 || !strings.HasPrefix(param, "-") {
+			continue
+		}
+
+		if _, isValid := validFlags[param]; isValid {
+			continue
+		}
+
+		errs = append(
+			errs,
+			fmt.Errorf("unknown flag '%s' for command 'complete'", param),
+		)
+	}
+
+	return &c, errors.Join(errs...)
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 func (c RootCommand) Execute() error {
@@ -219,4 +342,31 @@ func (c RemoveCommand) Execute() error {
 	}
 
 	return RemoveTasks(c.TaskNames)
+}
+
+func (c ResetCommand) Execute() error {
+	if c.ShowHelp {
+		fmt.Println(resetHelpMessage)
+		return nil
+	}
+
+	return fmt.Errorf("command 'reset' not yet implemented")
+}
+
+func (c BeginCommand) Execute() error {
+	if c.ShowHelp {
+		fmt.Println(beginHelpMessage)
+		return nil
+	}
+
+	return fmt.Errorf("command 'begin' not yet implemented")
+}
+
+func (c CompleteCommand) Execute() error {
+	if c.ShowHelp {
+		fmt.Println(completeHelpMessage)
+		return nil
+	}
+
+	return fmt.Errorf("command 'complete' not yet implemented")
 }

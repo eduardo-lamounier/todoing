@@ -59,6 +59,24 @@ func parse(args []string) (Command, error) {
 		}
 
 		return NewRemoveCommand(args[1:])
+	case "reset":
+		if len(args[1:]) < 1 {
+			return nil, fmt.Errorf("command 'reset' expects at least one argument")
+		}
+
+		return NewResetCommand(args[1:])
+	case "begin":
+		if len(args[1:]) < 1 {
+			return nil, fmt.Errorf("command 'begin' expects at least one argument")
+		}
+
+		return NewBeginCommand(args[1:])
+	case "complete":
+		if len(args[1:]) < 1 {
+			return nil, fmt.Errorf("command 'complete' expects at least one argument")
+		}
+
+		return NewCompleteCommand(args[1:])
 	default:
 		if len(args[0]) < 2 || !strings.HasPrefix(args[0], "-") {
 			return nil, fmt.Errorf("unknown command '%s'", args[0])

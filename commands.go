@@ -51,7 +51,8 @@ Flags:
 
 const removeHelpMessage = `usage: todoing remove [-h | --help] [task names]
 
-Removes the task with name of the specified argument.
+Removes the tasks with names of the specified arguments. If one of the
+specified arguments is a dot ("."), ALL your tasks will be removed.
 
 Flags:
   [-h | --help]   Shows this help message.`
@@ -105,6 +106,7 @@ type AddCommand struct {
 type RemoveCommand struct {
 	ShowHelp bool
 
+	RemoveAll bool
 	TaskNames []string
 }
 
@@ -201,11 +203,13 @@ func NewAddCommand(param string) (*AddCommand, error) {
 
 func NewRemoveCommand(params []string) (*RemoveCommand, error) {
 	c := RemoveCommand{
-		ShowHelp: slices.Contains(params, "-h") || slices.Contains(params, "--help"),
+		ShowHelp:  slices.Contains(params, "-h") || slices.Contains(params, "--help"),
+		RemoveAll: slices.Contains(params, "."),
 	}
 
-	if c.ShowHelp {
-		return &c, nil
+	toIgnore := map[string]struct{}{
+		"-h": {}, "--help": {},
+		".": {},
 	}
 
 	var errs []error
@@ -214,7 +218,7 @@ func NewRemoveCommand(params []string) (*RemoveCommand, error) {
 		if len(param) >= 2 && strings.HasPrefix(param, "-") {
 			errs = append(errs,
 				fmt.Errorf("unknown flag '%s' for command 'remove'", param))
-		} else {
+		} else if _, shouldIgnore := toIgnore[param]; !shouldIgnore {
 			c.TaskNames = append(c.TaskNames, param)
 		}
 	}
@@ -353,7 +357,7 @@ func (c RemoveCommand) Execute() error {
 		return nil
 	}
 
-	return RemoveTasks(c.TaskNames)
+	return RemoveTasks(c.TaskNames, c.RemoveAll)
 }
 
 func (c ResetCommand) Execute() error {

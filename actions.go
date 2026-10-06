@@ -154,7 +154,7 @@ func AddTaskInteractively(taskName string) error {
 	return SaveUserData(userData)
 }
 
-func RemoveTasks(taskNames []string) error {
+func RemoveTasks(taskNames []string, removeAll bool) error {
 	userData, err := LoadUserData()
 	if err != nil {
 		return err
@@ -178,6 +178,11 @@ func RemoveTasks(taskNames []string) error {
 	for taskName := range toRemove {
 		// Any task remaining in `toRemove` weren't found in the user's data:
 		errs = append(errs, fmt.Errorf("task with name \"%s\" does not exist", taskName))
+	}
+
+	if removeAll {
+		userData.Tasks = []Task{}
+		fmt.Println("Removed all your tasks.")
 	}
 
 	if err := SaveUserData(userData); err != nil {

@@ -40,7 +40,7 @@ about the task iteratively (some are optional).
 Flags:
 	[-h | --help]   Shows this help message.`
 
-const removeHelpMessage = `usage: todoing remove [-h | --help] [task name]
+const removeHelpMessage = `usage: todoing remove [-h | --help] [task names]
 
 Removes the task with name of the specified argument.
 

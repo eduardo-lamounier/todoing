@@ -58,6 +58,28 @@ type RootCommand struct {
 	ShowVersion bool
 }
 
+type ConfigCommand struct {
+	ShowHelp bool
+}
+
+type ListCommand struct {
+	ShowHelp bool
+}
+
+type AddCommand struct {
+	ShowHelp bool
+
+	TaskName string
+}
+
+type RemoveCommand struct {
+	ShowHelp bool
+
+	TaskNames []string
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 func NewRootCommand(flag string) (*RootCommand, error) {
 	c := RootCommand{
 		ShowHelp:    flag == "--help" || flag == "-h",
@@ -71,10 +93,6 @@ func NewRootCommand(flag string) (*RootCommand, error) {
 	return &c, nil
 }
 
-type ConfigCommand struct {
-	ShowHelp bool
-}
-
 func NewConfigCommand(flag string) (*ConfigCommand, error) {
 	c := ConfigCommand{
 		ShowHelp: flag == "-h" || flag == "--help",
@@ -85,10 +103,6 @@ func NewConfigCommand(flag string) (*ConfigCommand, error) {
 	}
 
 	return &c, nil
-}
-
-type ListCommand struct {
-	ShowHelp bool
 }
 
 func NewListCommand(flags []string) (*ListCommand, error) {
@@ -119,12 +133,6 @@ func NewListCommand(flags []string) (*ListCommand, error) {
 	return &c, errors.Join(errs...)
 }
 
-type AddCommand struct {
-	ShowHelp bool
-
-	TaskName string
-}
-
 func NewAddCommand(param string) (*AddCommand, error) {
 	var c AddCommand
 	if len(param) < 2 || !strings.HasPrefix(param, "-") {
@@ -141,12 +149,6 @@ func NewAddCommand(param string) (*AddCommand, error) {
 	}
 
 	return &c, nil
-}
-
-type RemoveCommand struct {
-	ShowHelp bool
-
-	TaskNames []string
 }
 
 func NewRemoveCommand(params []string) (*RemoveCommand, error) {

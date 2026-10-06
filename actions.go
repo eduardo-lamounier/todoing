@@ -186,3 +186,36 @@ func RemoveTasks(taskNames []string) error {
 
 	return errors.Join(errs...)
 }
+
+func UpdateStateOfTasks(taskNames []string, state TaskState) error {
+	userData, err := LoadUserData()
+	if err != nil {
+		return nil
+	}
+
+	// A set. Stores the tasks yet to have their states updated
+	// (a key is the task's name)
+	toUpdate := make(map[string]struct{})
+
+	for _, taskName := range taskNames {
+		toUpdate[taskName] = struct{}{}
+	}
+
+	for i, task := range userData.Tasks {
+		if _, shouldUpdate := toUpdate[task.Name]; shouldUpdate {
+			userData.Tasks[i].State = state
+			delete(toUpdate, task.Name)
+		}
+	}
+
+	var errs []error
+	for taskName := range toUpdate {
+		errs = append(errs, fmt.Errorf("task with name \"%s\" does not exist", taskName))
+	}
+
+	if err := SaveUserData(userData); err != nil {
+		errs = append(errs, err)
+	}
+
+	return errors.Join(errs...)
+}

@@ -362,7 +362,7 @@ func (c ResetCommand) Execute() error {
 		return nil
 	}
 
-	return fmt.Errorf("command 'reset' not yet implemented")
+	return UpdateStateOfTasks(c.TaskNames, TaskPending)
 }
 
 func (c BeginCommand) Execute() error {
@@ -371,7 +371,7 @@ func (c BeginCommand) Execute() error {
 		return nil
 	}
 
-	return fmt.Errorf("command 'begin' not yet implemented")
+	return UpdateStateOfTasks(c.TaskNames, TaskInProgress)
 }
 
 func (c CompleteCommand) Execute() error {
@@ -380,5 +380,5 @@ func (c CompleteCommand) Execute() error {
 		return nil
 	}
 
-	return fmt.Errorf("command 'complete' not yet implemented")
+	return UpdateStateOfTasks(c.TaskNames, TaskCompleted)
 }

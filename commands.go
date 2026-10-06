@@ -15,11 +15,20 @@ Supported commands:
 
   add                Adds a new task with the specified name.
 
-  remove             Removes the task with the specified name.
+  remove             Removes the tasks with the specified names.
+
+  reset              Marks the tasks with the specified names as pending.
+
+  begin              Marks the tasks with the specified names as in progress.
+
+  complete           Marks the tasks with the specified names as completed.
 
 Flags:
+
   [-h | --help]      Shows this help message.
+
   [-v | --version]   Shows the version of the app that is installed.
+
 
 You can use the [ -h | --help ] flag in any command to see its detailed reference.`
 

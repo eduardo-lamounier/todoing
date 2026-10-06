@@ -234,6 +234,7 @@ func NewResetCommand(params []string) (*ResetCommand, error) {
 	var errs []error
 	for _, param := range params {
 		if len(param) < 2 || !strings.HasPrefix(param, "-") {
+			c.TaskNames = append(c.TaskNames, param)
 			continue
 		}
 
@@ -262,6 +263,7 @@ func NewBeginCommand(params []string) (*BeginCommand, error) {
 	var errs []error
 	for _, param := range params {
 		if len(param) < 2 || !strings.HasPrefix(param, "-") {
+			c.TaskNames = append(c.TaskNames, param)
 			continue
 		}
 
@@ -290,6 +292,7 @@ func NewCompleteCommand(params []string) (*CompleteCommand, error) {
 	var errs []error
 	for _, param := range params {
 		if len(param) < 2 || !strings.HasPrefix(param, "-") {
+			c.TaskNames = append(c.TaskNames, param)
 			continue
 		}
 
